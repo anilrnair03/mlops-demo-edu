@@ -29,6 +29,7 @@ jobs:
           echo "::set-output name=PROJECT_ID::$PROJECT_ID"
 
       - name: Create Bootstrap Job
+        id: get-job-id
         env:
           API_KEY: ${{ secrets.CML_API_KEY }}
           CDSW_DOMAIN: "https://ml-0d9d45c4-174.sanket-5.kfjr-x0dh.cloudera.site"
@@ -45,8 +46,8 @@ jobs:
         env:
           API_KEY: ${{ secrets.CML_API_KEY }}
           CDSW_DOMAIN: "https://ml-0d9d45c4-174.sanket-5.kfjr-x0dh.cloudera.site"
-          PROJECT_ID: ${{ steps.deploy-to-cml.outputs.PROJECT_ID }}
-          JOB_ID: ${{ steps.create-bootstrap-job.outputs.JOB_ID }}
+          PROJECT_ID: ${{ steps.get-project-id.outputs.PROJECT_ID }}
+          JOB_ID: ${{ steps.get-job-id.outputs.JOB_ID }}
           RUN_TIME: "docker.repository.cloudera.com/cloudera/cdsw/ml-runtime-pbj-workbench-python3.9-standard:2024.02.1-b4"
         run: |
           CHILD_JOB_ID=$(curl -X POST "$CDSW_DOMAIN/api/v2/projects/$PROJECT_ID/jobs" -H "accept: application/json" -H "Authorization: Bearer $API_KEY" -H "Content-Type: application/json" -d "{ \"cpu\": 2, \"memory\": 4, \"name\": \"train_model\", \"runtime_identifier\": \"$RUN_TIME\", \"script\": \"fit.py\", \"parent_job_id\": \"$JOB_ID\"}" | jq -r ".id")
