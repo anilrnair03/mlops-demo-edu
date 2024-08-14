@@ -20,6 +20,7 @@ jobs:
           CDSW_DOMAIN: "https://ml-0d9d45c4-174.sanket-5.kfjr-x0dh.cloudera.site"
           PROJ_NAME: "cicd-demo"
         run: |
+          echo "Project name: $PROJ_NAME"
           PROJECT_ID=$(curl -X GET "$CDSW_DOMAIN/api/v2/projects?search_filter=%7B%22name%22%3A%22$PROJ_NAME%22%7D" -H "accept: application/json" -H "Authorization: Bearer $API_KEY" | jq -r ".projects|.[0]|.id")
           echo "Project ID: $PROJECT_ID"
           echo "::set-output name=PROJECT_ID::$PROJECT_ID"
